@@ -4,6 +4,9 @@ USB to TTL的目的是希望透過電腦來檢測Wifi晶片的版軟體版本及
 
 而, 為了讓電腦認得USB to TTL, 又需要在電腦上安裝USB to TTL這個裝置本身的驅動程式. Windows原先的PL-2303HX驅動程式,對某些PL-2303HX裝置無法啟動, 有可能是因為版本問題, 也有可能是因為該晶片為副廠裝做, 而當電腦是較新的軟體時, 該軟體認為該裝置晶片為副廠, 而不support. 因此, 需要原先在電腦上的驅動程式移除. 找到舊版的程式, 重新安裝.
 
+USB to Serial有多種晶片, 如, CP2102, FDTI, PL-2303HX
+Wifi晶片以ESP8266比較熱門, 其中又以ESP8266 ESP01 or ESP03為大宗
+
 穩壓器很重要, 獨立電源供電, 以免一些零件因電流不足而失常. 
 
 Wifi晶片不能接5v. 而, USB to TTL的VCC為5V.
@@ -11,6 +14,20 @@ Wifi晶片不能接5v. 而, USB to TTL的VCC為5V.
 Serial是對電腦 or Arduino
 Serial1是對Mega的TX1 and RX1
 Serial1是在Arduino code內, 用來和在Serial 1的Wifi晶片溝通
+在電腦上用COM Monitor透過Searial去和Arduino作溝通, 再將字串內容透過Serial1給Wifi晶片.
+
+用Arduino UNO時, 因為它的Serial Port只有一組, 那一組也用來從電腦download code到Arduino, 所以, 無法同時運作.
+因此, 可以透過SoftwareSerial的方式, 來將一些訊號針腳(pin)轉為用軟體模擬的方式來作TX/RX. 此時, Wifi的TX/RX即可接到該訊號針腳, 以和Arduino溝通. 
+在Arduino Mega則有組HardwareSerial, 相關晶片接腳為Serial來傳送訊息的, 則直接使用HardwareSerial.
+
+https://www.arduino.cc/en/Reference/SoftwareSerial
+The Arduino hardware has built-in support for serial communication on pins 0 and 1 (which also goes to the computer via the USB connection). The native serial support happens via a piece of hardware (built into the chip) called a UART.
+The SoftwareSerial library has been developed to allow serial communication on other digital pins of the Arduino, using software to replicate the functionality (hence the name "SoftwareSerial"). It is possible to have multiple software serial ports with speeds up to 115200 bps. A parameter enables inverted signaling for devices which require that protocol.
+ -If using multiple software serial ports, only one can receive data at a time.
+ -Not all pins on the Mega and Mega 2560 support change interrupts, so only the following can be used for RX: 10, 11, 12, 13, 14, 15, 50, 51, 52, 53, A8 (62), A9 (63), A10 (64), A11 (65), A12 (66), A13 (67), A14 (68), A15 (69).
+ -On Arduino or Genuino 101 the current maximum RX speed is 57600bps
+ -On Arduino or Genuino 101 RX doesn't work on Pin 13
+ -If your project requires simultaneous data flows, see Paul Stoffregen's AltSoftSerial library.
 
 http://lets-make-games.blogspot.tw/2015/04/wifi-esp8266-wifi.html
 http://lets-make-games.blogspot.tw/2015/05/wifi-esp8266-arduino.html
@@ -18,7 +35,6 @@ http://lets-make-games.blogspot.tw/2015/05/wifi-esp8266-arduino.html
 
 http://forum.arduino.cc/index.php?topic=457067.0
 https://forum.arduino.cc/index.php?topic=484479.0
-
 http://atceiling.blogspot.tw/2013/03/arduino-arduino.html
 
 https://stackoverflow.com/questions/3663668/how-to-compare-pointer-to-strings-in-c
@@ -26,5 +42,10 @@ https://stackoverflow.com/questions/1070882/c-string-compare
 https://stackoverflow.com/questions/1330550/c-compare-char-array-with-string
 https://stackoverflow.com/questions/7125697/c-comparing-pointers-with-chars
 
-穩壓器
-電流不夠
+穩壓器的作用? 電壓維持在一定水準, 但, 電池逐漸沒電有用嗎? 另外, 電流不夠有用嗎? 如何知道?
+
+https://create.arduino.cc/projecthub/user16726/configuring-the-esp8266-using-an-arduino-0ab2e6
+
+http://randomnerdtutorials.com/how-to-install-esp8266-board-arduino-ide/
+http://randomnerdtutorials.com/getting-started-with-esp8266-wifi-transceiver-review/
+http://randomnerdtutorials.com/fingerprint-sensor-module-with-arduino/
