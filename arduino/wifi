@@ -1,0 +1,15 @@
+
+以Arduino Meage 2560及ESP8266 - ESP01的Wifi晶片做範例. 但, USB to TTL (Serial)的晶片是用CP2102. 而我們用的是PL-2303HX. 
+USB to TTL的目的是希望透過電腦來檢測Wifi晶片的版軟體版本及功能. 因, 該wifi晶本身沒有USB接口, 只有Serial接腳, 所以, 需要自己找轉換器. 市售外接Wifi裝置, 為了是讓電腦可以或wifit功能. 因此, 都是以USB為接口. 不過, 在一切都無狀況下, 其實可以不用USB TTL這個步驟, 而是直接讓Arduino和Wifi通訊. 但, 為免因為不知Wifi裝置的版本及每秒傳輸率(Baud Rate), 而造成在Arduino上不知如何設定和Wifi裝置的通訊設定, 或者是為了檢測該Wifi裝置有無問題. 所以, 仍會有此一步驟.
+
+而, 為了讓電腦認得USB to TTL, 又需要在電腦上安裝USB to TTL這個裝置本身的驅動程式. Windows原先的PL-2303HX驅動程式,對某些PL-2303HX裝置無法啟動, 有可能是因為版本問題, 也有可能是因為該晶片為副廠裝做, 而當電腦是較新的軟體時, 該軟體認為該裝置晶片為副廠, 而不support. 因此, 需要原先在電腦上的驅動程式移除. 找到舊版的程式, 重新安裝.
+
+穩壓器很重要, 獨立電源供電, 以免一些零件因電流不足而失常. 
+
+Wifi晶片不能接5v. 而, USB to TTL的VCC為5V.
+
+Serial是對電腦 or Arduino
+Serial1是對Mega的TX1 and RX1
+
+http://lets-make-games.blogspot.tw/2015/04/wifi-esp8266-wifi.html
+http://lets-make-games.blogspot.tw/2015/05/wifi-esp8266-arduino.html
