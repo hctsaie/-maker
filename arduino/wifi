@@ -10,6 +10,21 @@ Wifi晶片不能接5v. 而, USB to TTL的VCC為5V.
 
 Serial是對電腦 or Arduino
 Serial1是對Mega的TX1 and RX1
+Serial1是在Arduino code內, 用來和在Serial 1的Wifi晶片溝通
 
 http://lets-make-games.blogspot.tw/2015/04/wifi-esp8266-wifi.html
 http://lets-make-games.blogspot.tw/2015/05/wifi-esp8266-arduino.html
+
+
+http://forum.arduino.cc/index.php?topic=457067.0
+https://forum.arduino.cc/index.php?topic=484479.0
+
+http://atceiling.blogspot.tw/2013/03/arduino-arduino.html
+
+https://stackoverflow.com/questions/3663668/how-to-compare-pointer-to-strings-in-c
+https://stackoverflow.com/questions/1070882/c-string-compare
+https://stackoverflow.com/questions/1330550/c-compare-char-array-with-string
+https://stackoverflow.com/questions/7125697/c-comparing-pointers-with-chars
+
+穩壓器
+電流不夠
