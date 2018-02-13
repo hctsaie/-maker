@@ -8,6 +8,7 @@ USB to Serial有多種晶片, 如, CP2102, FDTI, PL-2303HX
 Wifi晶片以ESP8266比較熱門, 其中又以ESP8266 ESP01 or ESP03為大宗
 
 穩壓器很重要, 獨立電源供電, 以免一些零件因電流不足而失常. 
+函式庫放到Arduino安裝資料夾內的libraries內
 
 Wifi晶片不能接5v. 而, USB to TTL的VCC為5V.
 
@@ -49,3 +50,11 @@ https://create.arduino.cc/projecthub/user16726/configuring-the-esp8266-using-an-
 http://randomnerdtutorials.com/how-to-install-esp8266-board-arduino-ide/
 http://randomnerdtutorials.com/getting-started-with-esp8266-wifi-transceiver-review/
 http://randomnerdtutorials.com/fingerprint-sensor-module-with-arduino/
+
+
+將溫度資料, 透過Arduino及Wifi晶片上傳到ThingSpeak網站. 
+看來該範例是用Arduino UNO, 該板子只有一組Serial Port. 所以, 用的是SoftwareSerial (用原有訊號孔, 以軟體方式來模擬TX/RX硬體的Serial Port)
+http://ruten-proteus.blogspot.tw/2014/11/internet-of-thing-arduino-esp8266.html
+
+用PCB電路板來將USB to TTL, Wifi晶片等等, 組成一個裝置, 可以直接插在電腦上使用.
+http://www.instructables.com/id/Makers-IoT-Kit-for-ESP8266-ESP-01/
