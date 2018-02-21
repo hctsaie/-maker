@@ -1,0 +1,72 @@
+http://ruten-proteus.blogspot.tw/2014/12/esp8266-at-command.html
+
+ESP8266, ESP-01 是使用 UART 傳送 AT 指令去切換無線模式和操作模組的功能，因此基本接線就是 3 ~ 3.6V 的電源 ( VCC, GND ) 和 UART 接腳 ( UTXD, URXD ) 共四支接腳，但是比較不同的是，ESP8266 需要另外一支晶片致能 ( CH_PD ) 的接腳與 VCC 接腳接在一起才能正常動作，不然無法通訊。
+
+ESP8266, ESP-01 因為使用的韌體版本不同會有不同的 BaudRate。藍板 ( 001800902 )：9600 bps；黑板 AT v0.23, SDK v1.0.1：115200 bps。
+
+ESP8266, ESP-01 AT 指令簡介：
+Note：每一條 AT 指令的最後都必須加上 \r\n，除非有特別說明，下面的 AT 指令都會將其省略，請讀者下 AT 指令時特別注意 ！
+
+ESP8266 無線模組的AT指令主要分為：基礎 AT 指令、WiFi 功能 AT 指令、TCP/IP 工具箱 AT 指令 ... 等，根據韌體版本的不同，會新增或修改 AT 指令以方便使用者的操作。
+
+每一條指令可以細分四種命令：
+測試命令
+
+AT+指令=?
+
+=? 用於查詢設置指令或內部設置的參數，以及其取值範圍；白話一點，就是測試剛剛下的 AT+指令 是否成功
+查詢命令
+
+AT+指令?
+
+? 返回該指令的當前設定值
+設置命令
+
+AT+指令=...
+
+=... 用來設置用戶自定義的參數值
+執行命令
+
+AT+指令
+
+用來執行模組內部已定義的程序
+要注意下面幾點：
+- 不是每條 AT 指令都具備上面 4 種命令
+- 前後若加上雙引號代表字串
+- 鮑率 ( Baud Rate ) 依韌體板本會有所不同，版本 0018000902 預設使用 9600 bps
+
+接下來，直接操作 ESP8200, ESP-01  AP+STA ( 混和模式 ) 三種模式來間接說明無線模組的 AP ( Access Point, 無線網路基地台 )、STA ( Station, 個人工作站 ) 模式指令，方法步驟如下：
+
+可以設定Wifi Chip: 
+1為Station個人工作站模式. 類似手機上網, 但, 不當AP無線基地台給其他人連.
+2為AP無線基地台模式, 類似家中或學校的AP無線基地台. 
+3為Station個人工作站 + AP無線基地台模式. 類似手機可以上網(Station個人工作站), 也可以同時作為AP無線基地台給其他人連上線的功能。
+
+將 ESP8266 無線模式設定為 Station個人工作站 + AP無線基地台混和模式的一個好處就是不需要切換模式而可以直接使用兩種模式的功能，
+
+* ESP8266, ESP-01 作為 Client 端與 PC 和手機互傳訊息： (不管是那一種, 都必須將ESP8266先連上家中的AP無線基地台, 或手機的AP無線基地台)
+
+步驟
+1. 在電腦利用USB to TTL連上ESP8266, 並用SSCOM軟體透過COM Port連接並操作ESP8266
+2. 下AT指令
+3. 透過SSCOM下AT+CWMODE?給ESP8266, 請ESP8266回目前ESP8266的模式
+4. 透過SSCOM下AT+CWMODE=3給ESP8266, 設定ESP8266為混合模式
+5. 透過SSCOM下AT+CWLAP, 請ESP8266去找出所有可連的AP無線基地台
+6. 透過SSCOM下AT+CWJAP="SSID","PASSWORD", 請ESP8266連上某個網路
+7. 透過SSCOM下AT+CWJAP?, 請ESP8266列出目前已經連上的網路
+8. 透過SSCOM下AT+CIPMUX=1, 請ESP8266使用多方連線, 也就是可以兩端多個連線同時互連
+9. 在電腦上開啟SocketTest軟體, 或在手機上開啟USR-TCP-Test軟體
+
+A. 將ESP8266當作Client端(ESP8266用SSCOM來操作, 想像為某一個APP), 去連Server(把SocketTest or USR-TCP-Test當Server使用, 等待APP來連)
+要將 PC 作為 Server 端，首先就是要讓作為 Client 端的 ESP8266, ESP-01 知道 Server 端的 IP 位址，假設 PC 的 IP 位址為 192.68.1.104
+
+打開 SocketTest 並切換為 Server 頁面，照著下面畫面做設定 ( IP 位址設定為 PC 的 IP )；設定完成之後按下 "Start Listening"
+( ESP8266, ESP-01 要不要重新關電再開電都可以) 輸入指令 (3) 和 (4)，確認無線模式與加入的 AP 無誤；使用多方連線與 Server 端通訊 (5)，只要是重開機就必須重新再下一次，因為預設的 CIPMUX 在重開機之後會恢復為 0
+
+10. 透過SSCOM下AT+CIPSTART=4,"TCP","192.168.1.104",8888, 請ESP8266用第四個頻道, 去連上Server(如, SocketTest軟體), 而該Server在網路上的位址是192.168.1.104 (SocketTest所安裝的電腦的網路位址), 該Server (如, SocketTest軟體)在該電腦所佔用的Port為8888
+11. 透過SSCOM下AT+CIPSEND=4,25告訴ESP8266要送給Server的訊息為25字元長, 使用第四個頻道. 然後在出現 > 提示符號出現後時輸入所要傳送的字串. 送出後, 會出現SEND OK.
+
+B. 將ESP8266當作Server端(ESP8266用SSCOM來操作), 等Client來連(把SocketTest or USR-TCP-Test當Client使用, 當作APP去連當作Server的ESP8266)
+ESP8266, ESP-01 作為 Server 端讓 Client 端的軟體可以連線，指令非常簡單！只要開啟 SERVER 並選擇 PORT 號碼即可。要開啟 Server 就是將 AT+CIPSERVER 第一個參數設定為 1，第二個參數設定為 8888 號碼 (6)，而且一定要先開啟多方連線 (5)；為了要知道 SocketTest ( as Client ) 要連線到的 Server 端 IP 位址，可以下 AT 指令詢問 ESP8266, ESP-01 (7)，第一個是 ESP8266 作為 AP 的 IP 位址，第二個是作為 STA 的 IP 位址 ，這兩個位址都可以使用，但網頁範例使用第二個 IP 位址。
+
+
