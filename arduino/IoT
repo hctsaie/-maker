@@ -1,0 +1,12 @@
+IoT Platform
+主要應該是以有Wifi功能為必要條件, 在WOT所列出的有三大類, 其中ESP8266也是其中一類.
+https://wotcity.com/blog/2015/08/31/esp8266-nodemcu-iot-starter-part-1/
+
+WoT.City 將 IoT 開發平臺區分為三大類型：
+
+Single Board Computer－例如：Intel Edison
+High Performance MCU－例如：ARM mbed
+WiFi MCU－例如：ESP8266 與 NodeMCU
+
+其中, Wifi MCU中有ESP8266及NodeMCU兩種版本. 而, NodeMCU版子本身就USB to TTL, 也可以使用Lua Script語言來開發. 相對於ESP8266要額外接USB to TTL是方便許多. 不過, 也可以將ESP8266的firmware從AT更換為NodeMCUFirmware, 也可以使用Lua Script語言來控制. 另外, 也可以讓Arduino IDE直接支援ESP8266這個版子, 就如同Arduino UNO, Mega, 等等, 也可以直接寫Code上傳到ESP8266.
+而, 開發的部分, 可以使用ESPlorer
