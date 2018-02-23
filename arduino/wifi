@@ -7,7 +7,7 @@ USB to TTL的目的是希望透過電腦來檢測Wifi晶片的版軟體版本及
 USB to Serial有多種晶片, 如, CP2102, FDTI, PL-2303HX
 Wifi晶片以ESP8266比較熱門, 其中又以ESP8266 ESP01 or ESP03為大宗
 
-穩壓器很重要, 獨立電源供電, 以免一些零件因電流不足而失常. 
+穩壓器很重要, 獨立電源供電, 以免一些零件因電流不足而失常. 重點是電流要足.
 函式庫放到Arduino安裝資料夾內的libraries內
 
 Wifi晶片不能接5v. 而, USB to TTL的VCC為5V.
@@ -53,8 +53,35 @@ http://randomnerdtutorials.com/fingerprint-sensor-module-with-arduino/
 
 
 將溫度資料, 透過Arduino及Wifi晶片上傳到ThingSpeak網站. 
-看來該範例是用Arduino UNO, 該板子只有一組Serial Port. 所以, 用的是SoftwareSerial (用原有訊號孔, 以軟體方式來模擬TX/RX硬體的Serial Port)
+看來該範例是用Arduino UNO, 該板子只有一組Hardware Serial Port, 也是就COM Port (序列埠, 用來讓電腦傳程式給Arduino). 所以, 用SoftwareSerial (用Arduino上原有訊號孔, 以軟體方式來模擬TX/RX硬體的Serial Port). 不過, 程式內還是將ESP8266接在RX0/TX0也就是Serial0的Port, 原則上, 如有要再上傳程式, 還是會衝, 需先將ESP8266在RX0/TX0的接腳移掉. 而這個程式是把USB to TTL接在SoftwareSerial Port, 它是用來讓Arduino程式傳一些訊息到電腦的監控程式, 以監控ESP8266的運作. 但, 要傳遞的內容, 也是自己在程式內指定.
 http://ruten-proteus.blogspot.tw/2014/11/internet-of-thing-arduino-esp8266.html
 
 用PCB電路板來將USB to TTL, Wifi晶片等等, 組成一個裝置, 可以直接插在電腦上使用.
 http://www.instructables.com/id/Makers-IoT-Kit-for-ESP8266-ESP-01/
+
+
+http://lets-make-games.blogspot.tw/2015/05/wifi-esp8266-arduino.html
+因為 Uno只有一組 RX/TX通訊連接孔，而這組 RX/TX其實是與它的 USB連接阜接在一起。當我們把 USB線插上電腦，就等於是使用了這組 RX/TX 在和電腦通訊(是的，Arduino內建USB轉 Serial轉換器，所以接USB就可以直接跟 RX/TX通訊)。這也表示，它同時只能跟 電腦和 ESP8266 其中一個通訊。如果接了 ESP8266 那就無法跟電腦通訊了。
+
+但 Mega 則有多組(0號~3號共四組)的 RX/TX通訊連接孔，因此我們就可以使用兩組 RX/TX，同時和電腦及 ESP8266 通訊。這會讓我們之後的實驗更容易。
+
+Arduino Mega 的 RX0/TX0 就和 Uno一樣，已經跟它的 USB連接阜連接。所以如果你使用的是 Mega，請改接到它的 RX1/ TX1(孔19、18)。
+
+除了通訊的配線之外，我們也要處理電源的配線。我高度建議不要使用 Arduino的 3.3v孔當作電源供應 ESP8266。因為，這就是我會辛苦搏鬥+鬼打牆的 80%原因！
+
+
+ESP8266 對於電源供應真的非常龜毛。電壓太低或太高，或供應的電流不足，都會讓它秀逗。如果能夠提供穩定的 3.3v電源和充足的電流(至少要200mA~300mA以上)，你才會有機會跟它相處愉快。不然無預警、不明原因的斷線、重新開機等症頭，將會如影隨形......
+
+Arduino 的電源供應並不穩定。電流可能也不夠。而如果  ESP8266又是和 Arduino，甚至小車的馬達，共用同一組電池，那麼電壓和電流就很容易隨著其他部份的電力消耗而波動，變得很不穩定。於是 ESP8266就會開始當機、吐出亂碼，甚至重新啟動。
+
+我使用的是下面這一款電源模組，它需要 6.5~12V電源輸入(很適合兩顆 18650電池)，並提供了穩定的 3.3V電源輸出。裝上後，ESP8266 的很多問題就消失了。要把電池與電源模組連接，可以去購買 2.1mm的 DC接頭來插。另外我也有找到另一款電源輸入只需要 4.5~7V的電源模組(適合兩顆3號電池)。
+
+
+http://stanley2910.pixnet.net/blog/post/126049610-esp8266%E7%9A%84%E5%A4%96%E9%83%A8%E9%9B%BB%E6%BA%90%E8%88%87%E7%B7%9A%E8%B7%AF%E5%95%8F%E9%A1%8C
+問題(1):使用Arduino Uno版的3.3V輸出電源是否可以當做ESP8266的外部電源？
+
+    根據Arduino Uno的官方技術規格書中寫到3.3V的輸出電源只能提供50mA 的電流（DC Current for 3.3V Pin 50 mA），但是ESP8266的平常耗電量可能要0~100mA，因此感覺上這種的供電方式似乎是不太足夠的。
+    
+問題(3): USB to Serial 晶片的TX接脚是否可以直接連接到ESP8266模組的RX接脚 ?
+
+    根據FT2303 IC 內的技術規格書中的通訊接脚TX輸出是3.3V ，因此此脚直接連接到直接連接到ESP8266模組的RX接脚是没有問題的。但是如我們是使用Arduino來傳資料，將Arduino的TX(傳送資料)接脚直接連接到ESP8266的RX(接收資料)接脚，但Arduino 的TX接脚輸出壓為5V，但ESP8266的RX接脚為3.3V的輸入電壓，所以如用上圖的而Arduino TX0接ESP8266 RX可能會有燒毀ESP8266的可能性，因此建議使用二個電阻(1K及2K或10K及 20K)分壓，使5.5V的輸出電壓變成3.3V的電壓。而Arduino RX與ESP8266 TX不需要分壓電路，因為當TX為High電位(3.3V)時， Arduino的RX能偵測到這是高電位，所以不需要分壓電路 
