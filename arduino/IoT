@@ -10,3 +10,9 @@ WiFi MCU－例如：ESP8266 與 NodeMCU
 
 其中, Wifi MCU中有ESP8266及NodeMCU兩種版本. 而, NodeMCU版子本身就USB to TTL, 也可以使用Lua Script語言來開發. 相對於ESP8266要額外接USB to TTL是方便許多. 不過, 也可以將ESP8266的firmware從AT更換為NodeMCUFirmware, 也可以使用Lua Script語言來控制. 另外, 也可以讓Arduino IDE直接支援ESP8266這個版子, 就如同Arduino UNO, Mega, 等等, 也可以直接寫Code上傳到ESP8266.
 而, 開發的部分, 可以使用ESPlorer
+
+讓Arduino IDE支援ESP8266當開發板, 如同Arduino UNO, Mega, 等等. 並使用USB to TTL連接ESP8266, 並上傳程式
+http://randomnerdtutorials.com/how-to-install-esp8266-board-arduino-ide/
+
+讓ESP8266變成Web Server, 並在Arduino IDE支援ESP8266當開發板的情況下, 直接透過USB to TTL上傳Code到ESP8266開發板
+https://randomnerdtutorials.com/esp8266-web-server/
