@@ -54,8 +54,9 @@ AT+指令
 5. 透過SSCOM下AT+CWLAP, 請ESP8266去找出所有可連的AP無線基地台
 6. 透過SSCOM下AT+CWJAP="SSID","PASSWORD", 請ESP8266連上某個網路
 7. 透過SSCOM下AT+CWJAP?, 請ESP8266列出目前已經連上的網路
-8. 透過SSCOM下AT+CIPMUX=1, 請ESP8266使用多方連線, 也就是可以兩端多個連線同時互連
-9. 在電腦上開啟SocketTest軟體, 或在手機上開啟USR-TCP-Test軟體
+8. 透過SSCOM下AT+CIFSR, 請ESP8266秀出自已目前在網路上的IP位址 (Internet Protocol Address)
+9. 透過SSCOM下AT+CIPMUX=1, 請ESP8266使用多方連線, 也就是可以兩端多個連線同時互連
+10. 在電腦上開啟SocketTest軟體, 或在手機上開啟USR-TCP-Test軟體
 
 A. 將ESP8266當作Client端(ESP8266用SSCOM來操作, 想像為某一個APP), 去連Server(把SocketTest or USR-TCP-Test當Server使用, 等待APP來連)
 要將 PC 作為 Server 端，首先就是要讓作為 Client 端的 ESP8266, ESP-01 知道 Server 端的 IP 位址，假設 PC 的 IP 位址為 192.68.1.104
@@ -63,13 +64,13 @@ A. 將ESP8266當作Client端(ESP8266用SSCOM來操作, 想像為某一個APP), �
 打開 SocketTest 並切換為 Server 頁面，照著下面畫面做設定 ( IP 位址設定為 PC 的 IP )；設定完成之後按下 "Start Listening"
 ( ESP8266, ESP-01 要不要重新關電再開電都可以) 輸入指令 (3) 和 (4)，確認無線模式與加入的 AP 無誤；使用多方連線與 Server 端通訊 (5)，只要是重開機就必須重新再下一次，因為預設的 CIPMUX 在重開機之後會恢復為 0
 
-10. 透過SSCOM下AT+CIPSTART=4,"TCP","192.168.1.104",8888, 請ESP8266用第四個頻道, 去連上Server(如, SocketTest軟體), 而該Server在網路上的位址是192.168.1.104 (SocketTest所安裝的電腦的網路位址), 該Server (如, SocketTest軟體)在該電腦所佔用的Port為8888
-11. 透過SSCOM下AT+CIPSEND=4,25告訴ESP8266要送給Server的訊息為25字元長, 使用第四個頻道. 然後在出現 > 提示符號出現後時輸入所要傳送的字串. 送出後, 會出現SEND OK.
+11. 透過SSCOM下AT+CIPSTART=4,"TCP","192.168.1.104",8888, 請ESP8266用第四個頻道, 去連上Server(如, SocketTest軟體, SocketTest可當一個網路上的Server, 也可以當Client), 而該Server在網路上的位址是192.168.1.104 (SocketTest所安裝的電腦的網路位址), 該Server (如, SocketTest軟體)在該電腦所佔用的Port為8888
+12. 透過SSCOM下AT+CIPSEND=4,25告訴ESP8266要送給Server的訊息為25字元長, 使用第四個頻道. 然後在出現 > 提示符號出現後時輸入所要傳送的字串. 送出後, 會出現SEND OK.
 
 要傳送字串，ESP8266 不管是作為 Server 端或是 Client 端是一樣的，程式設計師必須要先告訴 ESP8266 要由那一個連線傳送？且要傳送多少個字元？( 因使用 SendNew 選項，所以要記得多加兩個字元 ) (7)，然後在出現 > 提示符號出現時輸入所要傳送的字串 (8)；輸入的字串共有 23 個字元，加上 \r\n 就是 25 個字元，而傳送所使用的連線號碼為 4
 
-11. AT+CIPSEND=4,25
-12. >I am SSCOM32E as Client
+12. AT+CIPSEND=4,25
+13. >I am SSCOM32E as Client
 
 B. 將ESP8266當作Server端(ESP8266用SSCOM來操作), 等Client來連(把SocketTest or USR-TCP-Test當Client使用, 當作APP去連當作Server的ESP8266)
 ESP8266, ESP-01 作為 Server 端讓 Client 端的軟體可以連線，指令非常簡單！只要開啟 SERVER 並選擇 PORT 號碼即可。要開啟 Server 就是將 AT+CIPSERVER 第一個參數設定為 1，第二個參數設定為 8888 號碼 (6)，而且一定要先開啟多方連線 (5)；為了要知道 SocketTest ( as Client ) 要連線到的 Server 端 IP 位址，可以下 AT 指令詢問 ESP8266, ESP-01 (7)，第一個是 ESP8266 作為 AP 的 IP 位址，第二個是作為 STA 的 IP 位址 ，這兩個位址都可以使用，但網頁範例使用第二個 IP 位址。
