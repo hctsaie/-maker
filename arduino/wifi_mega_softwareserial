@@ -1,19 +1,21 @@
 使用SoftwareSerial的注意事項, 在Arduino Mega上, 不是每個pin都可以拿來當RX, TX
 https://www.arduino.cc/en/Reference/SoftwareSerial
 
-A:
+A: (PC <- Serial (RX0/TX0) -> Arduino <- SoftwareSerial(pin 10模擬Serial RX, pin11模擬Serial TX) -> ESP8266
 這個Example使用SoftwareSerial.h來連接ESP8266 Wifi Chip. 在電腦上, 使用序列埠COM (Serial 0)送給Arduino, 再由Arduino透過SoftwareSerial(10: RX in Arduino to other TX, 11: TX in Aduino for other RX)轉給ESP8266 Wifi Chip. 當ESP8266由SoftwareSerial(10, 11)回傳訊息時, 再由Arduino透過序列埠COM (Serial 0)傳到電腦.
-正常情況下, 當程式download到Arduino後, 就不會連接電腦及透過序列埠COM (Serial 0)送給訊息給Arduino, 而是Arduino程式內決定要送什麼訊息給ESP8266, 並透過SoftwareSerial傳送.
+正常情況下, 當程式download到Arduino後, 就不會連接電腦及透過序列埠COM (Serial RX0/TX0)送給訊息給Arduino, 而是Arduino程式內決定要送什麼訊息給ESP8266, 並透過SoftwareSerial傳送.
 這個範例是include <SoftwareSerial.h>
 https://www.arduino.cc/en/Tutorial/SoftwareSerialExample
+
+
+B:
 I an using a 5V Arduino Nano which of course is 5V. The Esp8266 is a 3.3v device and so I am using a voltage divider to bring the Arduinos 5V down to 3.3v. If you are using a 3.3v Arduino then you do not need the voltage divider.
 You only need the voltage divider on the Arduino TX pin. The 5V Arduino will read 3.3v as HIGH so you can connect the ESP8266 TX pin directly to the Arduino RX pin.
 Make sure the ESP8266 has enough current. If it does not it may keep resetting and may not broadcast a signal.
 Arduinos cannot supply enough current and you should use a separate power supply. While experimenting I use a bread board power supply.
 https://create.arduino.cc/projecthub/user16726/configuring-the-esp8266-using-an-arduino-0ab2e6
 
-B:
-一樣, 但使用(2, 3) as Arduino SoftwareSerial (RX in Arduio for other TX, TX in Arduino for other RX). 這是在Arduino UNO才能用. 在Arduino Mega. Not all pins on the Mega and Mega 2560 support change interrupts, so only the following can be used for RX:
+一樣是使用SoftwareSerial, 但使用pin 2, pin 3 as Arduino SoftwareSerial (RX in Arduio for other TX, TX in Arduino for other RX). 這是在Arduino UNO才能用. 在Arduino Mega. Not all pins on the Mega and Mega 2560 support change interrupts, so only the following can be used for RX:
  10, 11, 12, 13, 50, 51, 52, 53, 62, 63, 64, 65, 66, 67, 68, 69
 http://www.martyncurrey.com/arduino-to-esp8266-serial-commincation/
 http://www.martyncurrey.com/arduino-esp8266/
@@ -25,8 +27,9 @@ C:
 是使用在Arduino Mega才有Serial1 to Serial4.
 http://forum.arduino.cc/index.php?topic=457067.0
 
-D:
-這個Example使用SoftwareSerial.h來連接ESP8266 Wifi Chip. 但, SoftwareSerial是連接USB to TTL所使用. ESP8266 Wifi Chip是使用Serail0, 也就是在電腦上用來和Arduino溝通的同樣腳位. 因此, 當從電上, 使用序列埠COM (Serial 0)送給Arduino時, 訊息會直接給ESP8266 Wifi Chip. ESP8266 Wifi Chip回傳時, 也是可直接回到電腦上的序列埠COM (Serial 0). 
+
+D: (PC <- Serial (RX0/TX0) -> Arduino) (PC USB to TTL <- SoftwareSerial -> Arduino)
+這個Example使用SoftwareSerial.h來連接ESP8266 Wifi Chip. 但, SoftwareSerial是連接USB to TTL所使用. ESP8266 Wifi Chip是使用Serail0, 也就是在電腦上用來和Arduino溝通的同樣腳位. 因此, 當從電腦上, 使用序列埠COM (Serial 0)送給Arduino時, 訊息會直接給ESP8266 Wifi Chip. ESP8266 Wifi Chip回傳時, 也是可直接回到電腦上的序列埠COM (Serial 0). 
 正常情況下, 當程式download到Arduino後, 就不會連接電腦及透過序列埠COM (Serial 0)送給訊息給Arduino, 而是Arduino程式內決定要送什麼訊息給ESP8266, 並透過Serial0傳送.
 而, SoftwareSerial是用來透過USB to TTL傳訊息. 在電腦上, 可以開啟監控程式. Arduino程式除了透過Serail0送訊息給ESP8266, 也將該訊息透過SoftwareSerial經由USB to TTL傳到電腦另外開啟的監控程式.
 這個範例是#include <SoftwareSerial.h>
@@ -41,6 +44,10 @@ https://forum.arduino.cc/index.php?topic=484479.0
 2. 在該序列埠監控程式直接打指令給Arduino時, 是否可直接傳給ESP8266?
 1的話, 應該沒辦法. 因為, 在Arduino內用Serial.print時, 是同時會電腦的Serial Monitor及接在RX0/TX0的ESP8266. 
 但, 2看起來在序列埠監控程式打指令, 不知ESP8266是否有同時接收到. 應該要將序列埠監控程式傳入的指令用read讀出, 再寫一次到序列埠監控程式. 但, 會不會讓ESP8266因為這樣接到兩次一樣的指令. 或著是用SoftwareSerial寫出. 當然, 如在序列埠監控程式下AT, 而ESP8266真的有收到, 也回應OK. 似乎在序列埠監控程式也看不到. 需要用find之類的, 去讀出. 但, 或許干擾原本程式. 所以, 也必須有一段特殊的loop + duration去讀或接收透過序列埠監控程式和ESP8266的手工互動的訊息.
+
+E: (PC <- Serial (RX0/TX0) -> Arduino <- Serial (RX1/TX1) -> ESP8266
+這個範例是給Arduino Mega等, 有一個以上的Hardware Serial所使用.
+https://www.arduino.cc/en/Tutorial/MultiSerialMega
 
 Serial Read, Write, Print轉換
 https://arduinobasics.blogspot.tw/2012/07/arduino-basics-simple-arduino-serial.html
